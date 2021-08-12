@@ -46,6 +46,7 @@ http.createServer(async (req, res) => {
             }
         }else if(req.method == 'PUT'){
             if(req.url.startsWith('/user/')){
+                console.log(req.url.startsWith('/user/'));
                 const key = req.url.split('/')[2];
                 let body ='';
                 req.on('data', (data) => {
@@ -53,7 +54,7 @@ http.createServer(async (req, res) => {
                 });
                 return req.on('end', () =>{
                     console.log('PUT 본문(Body):', body);
-                    user[key] = JSON.parse(body).name;
+                    users[key] = JSON.parse(body).name;
                     return res.end(JSON.stringify(users));
                 });
             }
