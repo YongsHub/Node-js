@@ -51,3 +51,4 @@ app.use(morgan('dev'));
 다음 미들웨어로 넘어가려면 next 함수를 호출해야 합니다. 위 미들웨어들은 내부적으로 next를 호출하고 있으므로 연달아 쓸 수 있습니다. next를 호출하지 않는 미들웨어는 res.send나 res.sendFile등의 메서드로 응답을 보내야 합니다. express.static과 같은 미들웨어는 정적 파일을 제공할 때 next 대신 res.sendFile 메서드로 응답을 보냅니다. 따라서 정적 파일을 제공하는 경우 express.json, express.urlencoded, cookieParser 미들웨어는 실행되지 않습니다.
 
 
+
