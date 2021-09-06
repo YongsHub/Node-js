@@ -50,5 +50,53 @@ app.use(morgan('dev'));
 <br>
 다음 미들웨어로 넘어가려면 next 함수를 호출해야 합니다. 위 미들웨어들은 내부적으로 next를 호출하고 있으므로 연달아 쓸 수 있습니다. next를 호출하지 않는 미들웨어는 res.send나 res.sendFile등의 메서드로 응답을 보내야 합니다. express.static과 같은 미들웨어는 정적 파일을 제공할 때 next 대신 res.sendFile 메서드로 응답을 보냅니다. 따라서 정적 파일을 제공하는 경우 express.json, express.urlencoded, cookieParser 미들웨어는 실행되지 않습니다.
 
+<br>
+
+# multer 미들웨어
+
+이미지, 동영상 등을 비롯한 여러 가지 파일들을 멀티파트 형식으로 업로드할 때 사용하는 미들웨어입니다. 멀티파트 형식이란 다음과 같이 enctype이 multipart/form-data인 폼을 통해 업로드하는 데이터의 형식을 의미합니다.
+
+* npm i multer 를 이용하여 multer 를 설치할 수 있습니다.
+
+multer 함수의 인수로 설정을 넣습니다. storage 속성에는 어디에(destination) 어떤 이름으로 저장할지 넣습니다. destination과 filename 함수의 req 매개변수에는 요청에 대한 정보가, file 객체에는 업로드한 파일에 대한 정보가있습니다. done 매개변수는 함수입니다. done 함수의 첫 번째 인수에는 에러가 있다면 에러를 넣고, 두 번째 인수에는 실제 경로나 파일 이름을 넣어주면 됩니다.
+
+limits 속성에는 업로드에 대한 제한 사항을 설정할 수 있습니다. upload라는 변수에 multer 함수를 적용하고 나면 여기에 다양한 종류의 미들웨어가 들어 있습니다.
+
+* 파일을 하나만 업로드하는 경우 -> single 미들웨어를 사용
+* 파일을 여러개 업로드하는 경우 -> array를 사용
+
+# Router 객체로 라우팅 분리하기
+
+라우터를 만들 때는 요청 메서드와 주소별로 분기 처리를 하느라 코드가 매우 복잡했습니다. 익스프레스를 사용하는 이유 중 하나는 바로 라우팅을 깔끔하게 관리할 수 있다는 점입니다.
+
+const express = require('express'); <br>
+const router = express.Router();
+
+const indexRouter = require('./routes'); <br>
+const userRouter = require('./routes/user')
+
+app.use('/', indexRouter); <br>
+app.use('/user', userRouter); 와 같이 사용할 수 있습니다.
+
+유용한 팁이 하나 더 있습니다.
+> 라우터 주소에는 정규표현식을 비롯한 특수 패턴을 사용할 수 있습니다. 라우트 매개변수라고 불리는 패턴입니다.<br>
+
+router.get('/user/:id', function(req, res) {
+    console.log(req.params, req.query);
+});
+
+>주소에 :id가 있는데, 문자 그대로 :id를 의미하는 것이 아닙니다. 이 부분에는 다른 값을 넣을 수 있습니다. /user/1이나 /user/123 등의 요청도 이 라우터가 처리하게 됩니다. 이 방식의 장점은 :id에 해당하는 1이나 123을 조회할 수 있다는 점이며, req.params 객체 안에 들어 있습니다. :id 이면 req.params.id 로 조회 가능합니다. 단, 이 패턴을 사용할 때 주의할 점이 있습니다. 일반 라우터보다 뒤에 위치해야 한다는 것입니다.
+
+# req, res 객체 확인하기
+
+익스프레스의 req, res 객체는 http 모듈의 req, res 객체를 확장한 것입니다. 기존 http 모듈의 메서드도 사용할 수 있고, 익스프레스가 추가한 메서드나 속성을 사용할 수도 있습니다. 예를 들어 res.writeHead, res.write, res.end 메서드를 그대로 사용할 수 있으면서 res.send나 res.sendFile 같은 메서드도 쓸 수 있습니다.
+
+> req.app : req 객체를 통해 app 객체에 접근 할 수 있다.<br>
+req.body, req.cookies, req.ip, req.params, req.query, req.signedCookies, req.get(헤더 이름)
+
+> res.app / res.cookie/ res.clearCookie / res.end() / res.json(JSON) / res.redirect(주소) / res.send(데이터) / res.sendFile(경로) / res.set(헤더, 값) / res.status(코드)
+
+
+
 
 

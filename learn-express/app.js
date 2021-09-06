@@ -27,9 +27,12 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 
 const multer = require('multer');
 const fs = require('fs');
+const indexRouter = require('./routes');
+const userRouter = require('./routes/user');
+const router = express.Router();
 
 try{
-    fs.readFileSync('uploads');
+    fs.readdirSync('uploads');
 }catch(error){
     console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
     fs.mkdirSync('uploads');
@@ -59,6 +62,17 @@ app.post('/upload', upload.fields([{name: 'image1'}, {name: 'image2'}]), (req, r
     res.send('OK');
 },);
 
+app.use('/', indexRouter);
+app.use('/user', userRouter);
+
+router.route('/abc')
+    .get((req, res) => {
+        res.send('GET /abc');
+    })
+    .post((req, res) => {
+        res.send('POST /abc');
+    });
+
 
 
 app.use((req, res, next) => {
@@ -76,8 +90,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(500).send(err.message);
+    res.status(404).send('Not Found');
 });
 
 
